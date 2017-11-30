@@ -8,7 +8,7 @@ class TimeoutCache{
 //! BUG: refresh does not need to be defined.
     private var data: Any;
 
-    private var timeout: Int;
+    private var timeout: Float;
 
     /**
      *  this lets someone manually trigger a refresh as well
@@ -26,7 +26,7 @@ class TimeoutCache{
     private var prev_time: Float;
     private var diff_time: Float;
 
-    public function new(timeout_ms: Int){
+    public function new(timeout_ms: Float){
         this.timeout = timeout_ms;
         this.current_time = Date.now().getTime();
         this.prev_time = this.current_time;
