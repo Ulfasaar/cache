@@ -40,11 +40,12 @@ class TimeoutCache:
 
     def get(self):
         if (self.isInit == False):
-            self.current_time = (python_lib_Time.mktime(Date.now().date.timetuple()) * 1000)
-            self.diff_time = (self.current_time - self.prev_time)
-            if (self.diff_time >= self.timeout):
-                self.refresh()
-                self.prev_time = self.current_time
+            if (self.timeout != -1):
+                self.current_time = (python_lib_Time.mktime(Date.now().date.timetuple()) * 1000)
+                self.diff_time = (self.current_time - self.prev_time)
+                if (self.diff_time >= self.timeout):
+                    self.refresh()
+                    self.prev_time = self.current_time
         else:
             self.refresh()
             self.isInit = False
