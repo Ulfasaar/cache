@@ -1,0 +1,4 @@
+-main Test
+-dce full
+-js Test.js
+-cmd node Test.js
