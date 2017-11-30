@@ -7,13 +7,21 @@ class Unit extends TestCase{
 
     // pretend database 
     var test_val = 0;
-    
+
+    var my_cache = new TimeoutCache(-1);
+    var blah = 1;
+
     public function new(){
         super();
         this.cache.refresh = function(){
             // had to make it untyped to tell the compiler to shut up
             this.test_val = this.test_val + 1;
             untyped cache.store(this.test_val);
+        }
+
+        this.my_cache.refresh = function(){
+            blah = blah + 1;
+            my_cache.store(blah);
         }
     }
 
@@ -52,6 +60,25 @@ class Unit extends TestCase{
         }
 
         var actual = this.cache.get();
+        var expected = 3;
+        assertEquals(expected, actual); 
+    }
+
+    public function test_no_timeout(){
+        var actual = this.my_cache.get();
+        var expected = 2;
+        assertEquals(expected, actual); 
+    }
+
+    public function test_no_timeout_no_refresh(){
+        var actual = this.my_cache.get();
+        var expected = 2;
+        assertEquals(expected, actual); 
+    }
+
+    public function test_no_timeout_refresh(){
+        this.my_cache.refresh();
+        var actual = this.my_cache.get();
         var expected = 3;
         assertEquals(expected, actual); 
     }

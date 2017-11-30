@@ -220,6 +220,8 @@ haxe_unit_TestCase.prototype = {
 	,__class__: haxe_unit_TestCase
 };
 var Unit = function() {
+	this.blah = 1;
+	this.my_cache = new TimeoutCache(-1);
 	this.test_val = 0;
 	this.cache = new TimeoutCache(1200);
 	var _gthis = this;
@@ -230,27 +232,35 @@ var Unit = function() {
 		_gthis2.test_val += 1;
 		_gthis1.store(_gthis2.test_val);
 	};
+	this.my_cache.refresh = function() {
+		var _gthis3 = _gthis.my_cache;
+		var _gthis4 = _gthis;
+		_gthis4.blah += 1;
+		_gthis3.store(_gthis4.blah);
+	};
 };
 Unit.__name__ = ["Unit"];
 Unit.__super__ = haxe_unit_TestCase;
 Unit.prototype = $extend(haxe_unit_TestCase.prototype,{
 	cache: null
 	,test_val: null
+	,my_cache: null
+	,blah: null
 	,test_get: function() {
 		var actual = this.cache.get();
 		var expected = 1;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 24, className : "Unit", methodName : "test_get"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 32, className : "Unit", methodName : "test_get"});
 	}
 	,test_cached: function() {
 		var actual = this.cache.get();
 		var expected = 1;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 31, className : "Unit", methodName : "test_cached"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 39, className : "Unit", methodName : "test_cached"});
 	}
 	,test_refreshed: function() {
 		this.cache.refresh();
 		var actual = this.cache.get();
 		var expected = 2;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 39, className : "Unit", methodName : "test_refreshed"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 47, className : "Unit", methodName : "test_refreshed"});
 	}
 	,test_timed_out: function() {
 		var current_time = new Date().getTime();
@@ -262,7 +272,23 @@ Unit.prototype = $extend(haxe_unit_TestCase.prototype,{
 		}
 		var actual = this.cache.get();
 		var expected = 3;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 56, className : "Unit", methodName : "test_timed_out"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 64, className : "Unit", methodName : "test_timed_out"});
+	}
+	,test_no_timeout: function() {
+		var actual = this.my_cache.get();
+		var expected = 2;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 70, className : "Unit", methodName : "test_no_timeout"});
+	}
+	,test_no_timeout_no_refresh: function() {
+		var actual = this.my_cache.get();
+		var expected = 2;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 76, className : "Unit", methodName : "test_no_timeout_no_refresh"});
+	}
+	,test_no_timeout_refresh: function() {
+		this.my_cache.refresh();
+		var actual = this.my_cache.get();
+		var expected = 3;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 83, className : "Unit", methodName : "test_no_timeout_refresh"});
 	}
 	,__class__: Unit
 });
