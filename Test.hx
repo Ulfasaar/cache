@@ -12,21 +12,22 @@ class Unit extends TestCase{
         super();
         this.cache.refresh = function(){
             // had to make it untyped to tell the compiler to shut up
-            untyped cache.store(test_val++);
+            this.test_val = this.test_val + 1;
+            untyped cache.store(this.test_val);
         }
     }
 
     public function test_get(){
 
         var actual = this.cache.get();
-        var expected = 0;
+        var expected = 1;
         assertEquals(expected, actual); 
     }
 
     public function test_cached(){
         // call again should be same value
         var actual = this.cache.get();
-        var expected = 0;
+        var expected = 1;
         assertEquals(expected, actual); 
     }
 
@@ -34,7 +35,7 @@ class Unit extends TestCase{
         // refresh then call again, should be new value
         this.cache.refresh();
         var actual = this.cache.get();
-        var expected = 1;
+        var expected = 2;
         assertEquals(expected, actual); 
     }
 
@@ -51,7 +52,7 @@ class Unit extends TestCase{
         }
 
         var actual = this.cache.get();
-        var expected = 2;
+        var expected = 3;
         assertEquals(expected, actual); 
     }
 }

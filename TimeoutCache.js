@@ -11,11 +11,13 @@ var TimeoutCache = function(timeout_ms) {
 TimeoutCache.prototype = {
 	get: function() {
 		if(this.isInit == false) {
-			this.current_time = new Date().getTime();
-			this.diff_time = this.current_time - this.prev_time;
-			if(this.diff_time >= this.timeout) {
-				this.refresh();
-				this.prev_time = this.current_time;
+			if(this.timeout != -1) {
+				this.current_time = new Date().getTime();
+				this.diff_time = this.current_time - this.prev_time;
+				if(this.diff_time >= this.timeout) {
+					this.refresh();
+					this.prev_time = this.current_time;
+				}
 			}
 		} else {
 			this.refresh();

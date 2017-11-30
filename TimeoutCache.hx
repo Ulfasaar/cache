@@ -34,16 +34,18 @@ class TimeoutCache{
     }
 
     public function get():Any{
-
         if(this.isInit == false){
-            this.current_time = Date.now().getTime();
-            diff_time = current_time - prev_time;
+
+            if(this.timeout != -1){
+                this.current_time = Date.now().getTime();
+                diff_time = current_time - prev_time;
     
-            // time has elapsed so refresh the cache
-            if(diff_time >= timeout ){
-                this.refresh();
-                //reset the time
-                prev_time = current_time;
+                // time has elapsed so refresh the cache
+                if(diff_time >= timeout ){
+                    this.refresh();
+                    //reset the time
+                    prev_time = current_time;
+                }
             }
         }
         else{

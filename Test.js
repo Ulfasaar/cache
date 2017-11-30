@@ -225,7 +225,10 @@ var Unit = function() {
 	var _gthis = this;
 	haxe_unit_TestCase.call(this);
 	this.cache.refresh = function() {
-		_gthis.cache.store(_gthis.test_val++);
+		var _gthis1 = _gthis.cache;
+		var _gthis2 = _gthis;
+		_gthis2.test_val += 1;
+		_gthis1.store(_gthis2.test_val);
 	};
 };
 Unit.__name__ = ["Unit"];
@@ -235,19 +238,19 @@ Unit.prototype = $extend(haxe_unit_TestCase.prototype,{
 	,test_val: null
 	,test_get: function() {
 		var actual = this.cache.get();
-		var expected = 0;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 23, className : "Unit", methodName : "test_get"});
+		var expected = 1;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 24, className : "Unit", methodName : "test_get"});
 	}
 	,test_cached: function() {
 		var actual = this.cache.get();
-		var expected = 0;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 30, className : "Unit", methodName : "test_cached"});
+		var expected = 1;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 31, className : "Unit", methodName : "test_cached"});
 	}
 	,test_refreshed: function() {
 		this.cache.refresh();
 		var actual = this.cache.get();
-		var expected = 1;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 38, className : "Unit", methodName : "test_refreshed"});
+		var expected = 2;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 39, className : "Unit", methodName : "test_refreshed"});
 	}
 	,test_timed_out: function() {
 		var current_time = new Date().getTime();
@@ -258,8 +261,8 @@ Unit.prototype = $extend(haxe_unit_TestCase.prototype,{
 			diff_time = current_time - prev_time;
 		}
 		var actual = this.cache.get();
-		var expected = 2;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 55, className : "Unit", methodName : "test_timed_out"});
+		var expected = 3;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 56, className : "Unit", methodName : "test_timed_out"});
 	}
 	,__class__: Unit
 });
@@ -290,11 +293,13 @@ TimeoutCache.prototype = {
 	,diff_time: null
 	,get: function() {
 		if(this.isInit == false) {
-			this.current_time = new Date().getTime();
-			this.diff_time = this.current_time - this.prev_time;
-			if(this.diff_time >= this.timeout) {
-				this.refresh();
-				this.prev_time = this.current_time;
+			if(this.timeout != -1) {
+				this.current_time = new Date().getTime();
+				this.diff_time = this.current_time - this.prev_time;
+				if(this.diff_time >= this.timeout) {
+					this.refresh();
+					this.prev_time = this.current_time;
+				}
 			}
 		} else {
 			this.refresh();

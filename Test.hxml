@@ -1,4 +1,24 @@
+
+# use to test js 
 -main Test
 -dce full
 -js Test.js
 -cmd node Test.js
+
+# change to use this after hashlink installed for faster tests
+# --next 
+# -main Test
+# -hl Test.hl
+# -cmd hl Test.hl
+
+# --next
+# -main Test
+# -neko Test.n
+# -cmd neko Test.n
+
+# use to test with python, find way to run python 3 for it
+# --next
+# -main Test
+# -dce full
+# -python Test.py
+# -cmd python Test.py
