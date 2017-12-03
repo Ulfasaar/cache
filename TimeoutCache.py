@@ -24,9 +24,10 @@ class Date:
 
 
 class TimeoutCache:
-    __slots__ = ("data", "timeout", "refresh", "isInit", "hasElapsed", "current_time", "prev_time", "diff_time")
+    __slots__ = ("data", "timeout", "refresh", "isInit", "hasElapsed", "current_time", "prev_time", "diff_time", "empty")
 
     def __init__(self,timeout_ms):
+        self.empty = None
         self.diff_time = None
         self.prev_time = None
         self.refresh = None
