@@ -290,6 +290,16 @@ Unit.prototype = $extend(haxe_unit_TestCase.prototype,{
 		var expected = 3;
 		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 83, className : "Unit", methodName : "test_no_timeout_refresh"});
 	}
+	,test_empty: function() {
+		var _gthis = this;
+		this.my_cache.empty = function() {
+			_gthis.my_cache.store(0);
+		};
+		this.my_cache.empty();
+		var actual = this.my_cache.get();
+		var expected = 0;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 95, className : "Unit", methodName : "test_empty"});
+	}
 	,__class__: Unit
 });
 var Test = function() { };
@@ -336,6 +346,7 @@ TimeoutCache.prototype = {
 	,store: function(value) {
 		this.data = value;
 	}
+	,empty: null
 	,__class__: TimeoutCache
 };
 var Type = function() { };

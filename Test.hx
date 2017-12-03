@@ -82,6 +82,18 @@ class Unit extends TestCase{
         var expected = 3;
         assertEquals(expected, actual); 
     }
+    public function test_empty(){
+
+        this.my_cache.empty = function(){
+            this.my_cache.store(0);
+        }
+
+        // this.my_cache.refresh();
+        this.my_cache.empty();
+        var actual = this.my_cache.get();
+        var expected = 0;
+        assertEquals(expected, actual); 
+    }
 }
 
 
