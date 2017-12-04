@@ -1,0 +1,19 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Date	../TimeoutCache.py	/^class Date:$/;"	kind:class	line:8
+TimeoutCache	../TimeoutCache.py	/^class TimeoutCache:$/;"	kind:class	line:26
+TimeoutCache.py	../TimeoutCache.py	1;"	kind:file	line:1
+__init__	../TimeoutCache.py	/^    def __init__(self,timeout_ms):$/;"	kind:member	line:28
+__init__	../TimeoutCache.py	/^    def __init__(self,year,month,day,hour,_hx_min,sec):$/;"	kind:member	line:11
+__init__.py	../__init__.py	1;"	kind:file	line:1
+__slots__	../TimeoutCache.py	/^    __slots__ = ("date",)$/;"	kind:variable	line:9
+empty	../TimeoutCache.py	/^    def empty(self):$/;"	kind:member	line:56
+get	../TimeoutCache.py	/^    def get(self):$/;"	kind:member	line:40
+now	../TimeoutCache.py	/^    def now():$/;"	kind:member	line:19
+python_lib_Time	../TimeoutCache.py	/^import time as python_lib_Time$/;"	kind:namespace	line:5
+python_lib_datetime_Datetime	../TimeoutCache.py	/^from datetime import datetime as python_lib_datetime_Datetime$/;"	kind:namespace	line:4
+store	../TimeoutCache.py	/^    def store(self,value):$/;"	kind:member	line:53

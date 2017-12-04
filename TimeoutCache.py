@@ -24,10 +24,13 @@ class Date:
 
 
 class TimeoutCache:
+    __slots__ = ("data", "timeout", "refresh", "isInit", "hasElapsed", "current_time", "prev_time", "diff_time", "empty")
 
     def __init__(self,timeout_ms):
+        self.empty = None
         self.diff_time = None
         self.prev_time = None
+        self.refresh = None
         self.data = None
         self.hasElapsed = False
         self.isInit = True
@@ -35,9 +38,6 @@ class TimeoutCache:
         self.current_time = (python_lib_Time.mktime(Date.now().date.timetuple()) * 1000)
         self.prev_time = self.current_time
         self.diff_time = (self.current_time - self.prev_time)
-
-    def refresh(self):
-        pass
 
     def get(self):
         if (self.isInit == False):
@@ -54,8 +54,5 @@ class TimeoutCache:
 
     def store(self,value):
         self.data = value
-
-    def empty(self):
-        self.data = 0
 
 
