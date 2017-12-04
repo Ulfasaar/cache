@@ -9,7 +9,9 @@ var TimeoutCache = function(timeout_ms) {
 	this.diff_time = this.current_time - this.prev_time;
 };
 TimeoutCache.prototype = {
-	get: function() {
+	refresh: function() {
+	}
+	,get: function() {
 		if(this.isInit == false) {
 			if(this.timeout != -1) {
 				this.current_time = new Date().getTime();
@@ -27,6 +29,9 @@ TimeoutCache.prototype = {
 	}
 	,store: function(value) {
 		this.data = value;
+	}
+	,empty: function() {
+		this.data = 0;
 	}
 };
 })();

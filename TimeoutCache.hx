@@ -14,7 +14,7 @@ class TimeoutCache{
      *  this lets someone manually trigger a refresh as well
      *  todo: make this compulsorary
      */
-    public var refresh:Void->Void;
+    dynamic public function refresh(){}
 
     //TODO make private actually work on all targets somehow
     private var isInit:Bool = true;
@@ -72,8 +72,12 @@ class TimeoutCache{
     /**
      *  This callback is called everytime the cache gets emptied
      *  TODO: make this so that it defaults to setting the variable to null somehow
+     *  for now it sets it to 0 which doesn't do anything useful
      */
-    public var empty: Void->Void;
+    public dynamic function empty(){
+        this.data = 0;
+    }
+    // public var empty: Void->Void;
     // public var empty = function(){
     //     // this.data = null;
     // }

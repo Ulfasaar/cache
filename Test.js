@@ -321,7 +321,8 @@ TimeoutCache.__name__ = ["TimeoutCache"];
 TimeoutCache.prototype = {
 	data: null
 	,timeout: null
-	,refresh: null
+	,refresh: function() {
+	}
 	,isInit: null
 	,hasElapsed: null
 	,current_time: null
@@ -346,7 +347,9 @@ TimeoutCache.prototype = {
 	,store: function(value) {
 		this.data = value;
 	}
-	,empty: null
+	,empty: function() {
+		this.data = 0;
+	}
 	,__class__: TimeoutCache
 };
 var Type = function() { };
