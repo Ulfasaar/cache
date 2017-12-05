@@ -137,7 +137,7 @@ class TimeoutCacheUnit extends TestCase{
 class Test{
     public static function main(){
         var runner = new TestRunner();
-        // runner.add(new CacheUnit());
+        runner.add(new CacheUnit());
         runner.add(new TimeoutCacheUnit());
         runner.run();
     }

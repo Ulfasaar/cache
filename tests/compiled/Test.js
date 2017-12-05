@@ -963,6 +963,7 @@ var tests_Test = function() { };
 tests_Test.__name__ = ["tests","Test"];
 tests_Test.main = function() {
 	var runner = new haxe_unit_TestRunner();
+	runner.add(new tests_CacheUnit());
 	runner.add(new tests_TimeoutCacheUnit());
 	runner.run();
 };
