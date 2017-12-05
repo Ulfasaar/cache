@@ -178,138 +178,45 @@ StringTools.rtrim = function(s) {
 StringTools.trim = function(s) {
 	return StringTools.ltrim(StringTools.rtrim(s));
 };
-var haxe_unit_TestCase = function() {
+var Type = function() { };
+Type.__name__ = ["Type"];
+Type.getClassName = function(c) {
+	var a = c.__name__;
+	if(a == null) {
+		return null;
+	}
+	return a.join(".");
 };
-haxe_unit_TestCase.__name__ = ["haxe","unit","TestCase"];
-haxe_unit_TestCase.prototype = {
-	currentTest: null
-	,setup: function() {
-	}
-	,tearDown: function() {
-	}
-	,print: function(v) {
-		haxe_unit_TestRunner.print(v);
-	}
-	,assertTrue: function(b,c) {
-		this.currentTest.done = true;
-		if(b != true) {
-			this.currentTest.success = false;
-			this.currentTest.error = "expected true but was false";
-			this.currentTest.posInfos = c;
-			throw new js__$Boot_HaxeError(this.currentTest);
-		}
-	}
-	,assertFalse: function(b,c) {
-		this.currentTest.done = true;
-		if(b == true) {
-			this.currentTest.success = false;
-			this.currentTest.error = "expected false but was true";
-			this.currentTest.posInfos = c;
-			throw new js__$Boot_HaxeError(this.currentTest);
-		}
-	}
-	,assertEquals: function(expected,actual,c) {
-		this.currentTest.done = true;
-		if(actual != expected) {
-			this.currentTest.success = false;
-			this.currentTest.error = "expected '" + Std.string(expected) + "' but was '" + Std.string(actual) + "'";
-			this.currentTest.posInfos = c;
-			throw new js__$Boot_HaxeError(this.currentTest);
-		}
-	}
-	,__class__: haxe_unit_TestCase
+Type.getInstanceFields = function(c) {
+	var a = [];
+	for(var i in c.prototype) a.push(i);
+	HxOverrides.remove(a,"__class__");
+	HxOverrides.remove(a,"__properties__");
+	return a;
 };
-var Unit = function() {
-	this.blah = 1;
-	this.my_cache = new TimeoutCache(-1);
-	this.test_val = 0;
-	this.cache = new TimeoutCache(1200);
-	var _gthis = this;
-	haxe_unit_TestCase.call(this);
-	this.cache.refresh = function() {
-		var _gthis1 = _gthis.cache;
-		var _gthis2 = _gthis;
-		_gthis2.test_val += 1;
-		_gthis1.store(_gthis2.test_val);
-	};
-	this.my_cache.refresh = function() {
-		var _gthis3 = _gthis.my_cache;
-		var _gthis4 = _gthis;
-		_gthis4.blah += 1;
-		_gthis3.store(_gthis4.blah);
-	};
+var cache_Cache = function(refresh) {
+	this.isInit = true;
+	this._refresh = refresh;
 };
-Unit.__name__ = ["Unit"];
-Unit.__super__ = haxe_unit_TestCase;
-Unit.prototype = $extend(haxe_unit_TestCase.prototype,{
-	cache: null
-	,test_val: null
-	,my_cache: null
-	,blah: null
-	,test_get: function() {
-		var actual = this.cache.get();
-		var expected = 1;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 32, className : "Unit", methodName : "test_get"});
-	}
-	,test_cached: function() {
-		var actual = this.cache.get();
-		var expected = 1;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 39, className : "Unit", methodName : "test_cached"});
-	}
-	,test_refreshed: function() {
-		this.cache.refresh();
-		var actual = this.cache.get();
-		var expected = 2;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 47, className : "Unit", methodName : "test_refreshed"});
-	}
-	,test_timed_out: function() {
-		var current_time = new Date().getTime();
-		var prev_time = current_time;
-		var diff_time = current_time - prev_time;
-		while(diff_time < 2000) {
-			current_time = new Date().getTime();
-			diff_time = current_time - prev_time;
+cache_Cache.__name__ = ["cache","Cache"];
+cache_Cache.prototype = {
+	data: null
+	,_refresh: null
+	,isInit: null
+	,get: function() {
+		if(this.isInit) {
+			this.data = this._refresh();
+			this.isInit = false;
 		}
-		var actual = this.cache.get();
-		var expected = 3;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 64, className : "Unit", methodName : "test_timed_out"});
+		return this.data;
 	}
-	,test_no_timeout: function() {
-		var actual = this.my_cache.get();
-		var expected = 2;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 70, className : "Unit", methodName : "test_no_timeout"});
+	,refresh: function() {
+		this.data = this._refresh();
 	}
-	,test_no_timeout_no_refresh: function() {
-		var actual = this.my_cache.get();
-		var expected = 2;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 76, className : "Unit", methodName : "test_no_timeout_no_refresh"});
-	}
-	,test_no_timeout_refresh: function() {
-		this.my_cache.refresh();
-		var actual = this.my_cache.get();
-		var expected = 3;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 83, className : "Unit", methodName : "test_no_timeout_refresh"});
-	}
-	,test_empty: function() {
-		var _gthis = this;
-		this.my_cache.empty = function() {
-			_gthis.my_cache.store(0);
-		};
-		this.my_cache.empty();
-		var actual = this.my_cache.get();
-		var expected = 0;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 95, className : "Unit", methodName : "test_empty"});
-	}
-	,__class__: Unit
-});
-var Test = function() { };
-Test.__name__ = ["Test"];
-Test.main = function() {
-	var runner = new haxe_unit_TestRunner();
-	runner.add(new Unit());
-	runner.run();
+	,empty: null
+	,__class__: cache_Cache
 };
-var TimeoutCache = function(timeout_ms) {
+var cache_TimeoutCache = function(timeout_ms) {
 	this.hasElapsed = false;
 	this.isInit = true;
 	this.timeout = timeout_ms;
@@ -317,8 +224,8 @@ var TimeoutCache = function(timeout_ms) {
 	this.prev_time = this.current_time;
 	this.diff_time = this.current_time - this.prev_time;
 };
-TimeoutCache.__name__ = ["TimeoutCache"];
-TimeoutCache.prototype = {
+cache_TimeoutCache.__name__ = ["cache","TimeoutCache"];
+cache_TimeoutCache.prototype = {
 	data: null
 	,timeout: null
 	,refresh: null
@@ -347,23 +254,7 @@ TimeoutCache.prototype = {
 		this.data = value;
 	}
 	,empty: null
-	,__class__: TimeoutCache
-};
-var Type = function() { };
-Type.__name__ = ["Type"];
-Type.getClassName = function(c) {
-	var a = c.__name__;
-	if(a == null) {
-		return null;
-	}
-	return a.join(".");
-};
-Type.getInstanceFields = function(c) {
-	var a = [];
-	for(var i in c.prototype) a.push(i);
-	HxOverrides.remove(a,"__class__");
-	HxOverrides.remove(a,"__properties__");
-	return a;
+	,__class__: cache_TimeoutCache
 };
 var haxe_StackItem = { __ename__ : true, __constructs__ : ["CFunction","Module","FilePos","Method","LocalFunction"] };
 haxe_StackItem.CFunction = ["CFunction",0];
@@ -493,6 +384,47 @@ var haxe_Log = function() { };
 haxe_Log.__name__ = ["haxe","Log"];
 haxe_Log.trace = function(v,infos) {
 	js_Boot.__trace(v,infos);
+};
+var haxe_unit_TestCase = function() {
+};
+haxe_unit_TestCase.__name__ = ["haxe","unit","TestCase"];
+haxe_unit_TestCase.prototype = {
+	currentTest: null
+	,setup: function() {
+	}
+	,tearDown: function() {
+	}
+	,print: function(v) {
+		haxe_unit_TestRunner.print(v);
+	}
+	,assertTrue: function(b,c) {
+		this.currentTest.done = true;
+		if(b != true) {
+			this.currentTest.success = false;
+			this.currentTest.error = "expected true but was false";
+			this.currentTest.posInfos = c;
+			throw new js__$Boot_HaxeError(this.currentTest);
+		}
+	}
+	,assertFalse: function(b,c) {
+		this.currentTest.done = true;
+		if(b == true) {
+			this.currentTest.success = false;
+			this.currentTest.error = "expected false but was true";
+			this.currentTest.posInfos = c;
+			throw new js__$Boot_HaxeError(this.currentTest);
+		}
+	}
+	,assertEquals: function(expected,actual,c) {
+		this.currentTest.done = true;
+		if(actual != expected) {
+			this.currentTest.success = false;
+			this.currentTest.error = "expected '" + Std.string(expected) + "' but was '" + Std.string(actual) + "'";
+			this.currentTest.posInfos = c;
+			throw new js__$Boot_HaxeError(this.currentTest);
+		}
+	}
+	,__class__: haxe_unit_TestCase
 };
 var haxe_unit_TestResult = function() {
 	this.m_tests = new List();
@@ -917,6 +849,123 @@ js_Boot.__isNativeObj = function(o) {
 js_Boot.__resolveNativeClass = function(name) {
 	return $global[name];
 };
+var tests_CacheUnit = function() {
+	this.i = 0;
+	var _gthis = this;
+	haxe_unit_TestCase.call(this);
+	this.cache = new cache_Cache(function() {
+		_gthis.i += 1;
+		return _gthis.i;
+	});
+};
+tests_CacheUnit.__name__ = ["tests","CacheUnit"];
+tests_CacheUnit.__super__ = haxe_unit_TestCase;
+tests_CacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
+	cache: null
+	,i: null
+	,test_cached: function() {
+		var actual = this.cache.get();
+		var expected = 1;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 24, className : "tests.CacheUnit", methodName : "test_cached"});
+	}
+	,test_refreshed: function() {
+		this.cache.refresh();
+		var actual = this.cache.get();
+		var expected = 2;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 33, className : "tests.CacheUnit", methodName : "test_refreshed"});
+	}
+	,__class__: tests_CacheUnit
+});
+var tests_TimeoutCacheUnit = function() {
+	this.blah = 1;
+	this.my_cache = new cache_TimeoutCache(-1);
+	this.test_val = 0;
+	this.cache = new cache_TimeoutCache(1200);
+	var _gthis = this;
+	haxe_unit_TestCase.call(this);
+	this.cache.refresh = function() {
+		var _gthis1 = _gthis.cache;
+		var _gthis2 = _gthis;
+		_gthis2.test_val += 1;
+		_gthis1.store(_gthis2.test_val);
+	};
+	this.my_cache.refresh = function() {
+		var _gthis3 = _gthis.my_cache;
+		var _gthis4 = _gthis;
+		_gthis4.blah += 1;
+		_gthis3.store(_gthis4.blah);
+	};
+};
+tests_TimeoutCacheUnit.__name__ = ["tests","TimeoutCacheUnit"];
+tests_TimeoutCacheUnit.__super__ = haxe_unit_TestCase;
+tests_TimeoutCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
+	cache: null
+	,test_val: null
+	,my_cache: null
+	,blah: null
+	,test_get: function() {
+		var actual = this.cache.get();
+		var expected = 1;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 69, className : "tests.TimeoutCacheUnit", methodName : "test_get"});
+	}
+	,test_cached: function() {
+		var actual = this.cache.get();
+		var expected = 1;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 76, className : "tests.TimeoutCacheUnit", methodName : "test_cached"});
+	}
+	,test_refreshed: function() {
+		this.cache.refresh();
+		var actual = this.cache.get();
+		var expected = 2;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 84, className : "tests.TimeoutCacheUnit", methodName : "test_refreshed"});
+	}
+	,test_timed_out: function() {
+		var current_time = new Date().getTime();
+		var prev_time = current_time;
+		var diff_time = current_time - prev_time;
+		while(diff_time < 2000) {
+			current_time = new Date().getTime();
+			diff_time = current_time - prev_time;
+		}
+		var actual = this.cache.get();
+		var expected = 3;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 101, className : "tests.TimeoutCacheUnit", methodName : "test_timed_out"});
+	}
+	,test_no_timeout: function() {
+		var actual = this.my_cache.get();
+		var expected = 2;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 107, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout"});
+	}
+	,test_no_timeout_no_refresh: function() {
+		var actual = this.my_cache.get();
+		var expected = 2;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 113, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout_no_refresh"});
+	}
+	,test_no_timeout_refresh: function() {
+		this.my_cache.refresh();
+		var actual = this.my_cache.get();
+		var expected = 3;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 120, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout_refresh"});
+	}
+	,test_empty: function() {
+		var _gthis = this;
+		this.my_cache.empty = function() {
+			_gthis.my_cache.store(0);
+		};
+		this.my_cache.empty();
+		var actual = this.my_cache.get();
+		var expected = 0;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 132, className : "tests.TimeoutCacheUnit", methodName : "test_empty"});
+	}
+	,__class__: tests_TimeoutCacheUnit
+});
+var tests_Test = function() { };
+tests_Test.__name__ = ["tests","Test"];
+tests_Test.main = function() {
+	var runner = new haxe_unit_TestRunner();
+	runner.add(new tests_TimeoutCacheUnit());
+	runner.run();
+};
 String.prototype.__class__ = String;
 String.__name__ = ["String"];
 Array.__name__ = ["Array"];
@@ -931,5 +980,5 @@ Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
 js_Boot.__toStr = ({ }).toString;
-Test.main();
+tests_Test.main();
 })(typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

@@ -1,4 +1,4 @@
-
+package cache;
 /**
  *  This class is a convenient way to implement lazy in memory caching
   it only refreshes the cache when data is requested and the cache times out, or if refresh is called

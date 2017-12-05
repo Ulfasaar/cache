@@ -23,7 +23,7 @@ class Date:
 
 
 
-class TimeoutCache:
+class cache_TimeoutCache:
     __slots__ = ("data", "timeout", "refresh", "isInit", "hasElapsed", "current_time", "prev_time", "diff_time", "empty")
 
     def __init__(self,timeout_ms):

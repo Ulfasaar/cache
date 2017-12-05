@@ -1,9 +1,46 @@
+package tests;
+
 import haxe.unit.TestCase;
 import haxe.unit.TestRunner;
+import cache.TimeoutCache;
+import cache.Cache;
 
-class Unit extends TestCase{
+class CacheUnit extends TestCase{
+    var cache:Cache;
+    var i:Int = 0;
+
+    public function new(){
+        super();
+        this.cache = new Cache(function(){
+            this.i += 1;
+            return i;
+        });
+    }
+
+    public function test_cached(){
+        // call again should be same value
+        var actual = this.cache.get();
+        var expected = 1;
+        assertEquals(expected, actual); 
+    }
+    public function test_refreshed(){
+
+        this.cache.refresh();
+
+        // call again should be same value
+        var actual = this.cache.get();
+        var expected = 2;
+        assertEquals(expected, actual); 
+    }
+}
+   
+
+
+class TimeoutCacheUnit extends TestCase{
 
     var cache = new TimeoutCache(1200);
+
+    //! clean this up make seperate units for each class
 
     // pretend database 
     var test_val = 0;
@@ -98,10 +135,10 @@ class Unit extends TestCase{
 
 
 class Test{
-
     public static function main(){
         var runner = new TestRunner();
-        runner.add(new Unit());
+        // runner.add(new CacheUnit());
+        runner.add(new TimeoutCacheUnit());
         runner.run();
     }
 }

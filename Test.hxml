@@ -1,9 +1,9 @@
 
 # use to test js 
--main Test
+-main tests.Test
 -dce full
--js Test.js
--cmd node Test.js
+-js tests/compiled/Test.js
+-cmd node tests/compiled/Test.js
 
 # change to use this after hashlink installed for faster tests
 # --next 

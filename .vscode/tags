@@ -4,16 +4,16 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
-Date	../TimeoutCache.py	/^class Date:$/;"	kind:class	line:8
-TimeoutCache	../TimeoutCache.py	/^class TimeoutCache:$/;"	kind:class	line:26
-TimeoutCache.py	../TimeoutCache.py	1;"	kind:file	line:1
-__init__	../TimeoutCache.py	/^    def __init__(self,timeout_ms):$/;"	kind:member	line:28
-__init__	../TimeoutCache.py	/^    def __init__(self,year,month,day,hour,_hx_min,sec):$/;"	kind:member	line:11
-__init__.py	../__init__.py	1;"	kind:file	line:1
-__slots__	../TimeoutCache.py	/^    __slots__ = ("date",)$/;"	kind:variable	line:9
-empty	../TimeoutCache.py	/^    def empty(self):$/;"	kind:member	line:56
-get	../TimeoutCache.py	/^    def get(self):$/;"	kind:member	line:40
-now	../TimeoutCache.py	/^    def now():$/;"	kind:member	line:19
-python_lib_Time	../TimeoutCache.py	/^import time as python_lib_Time$/;"	kind:namespace	line:5
-python_lib_datetime_Datetime	../TimeoutCache.py	/^from datetime import datetime as python_lib_datetime_Datetime$/;"	kind:namespace	line:4
-store	../TimeoutCache.py	/^    def store(self,value):$/;"	kind:member	line:53
+Date	../dist\TimeoutCache.py	/^class Date:$/;"	kind:class	line:8
+TimeoutCache.py	../dist\TimeoutCache.py	1;"	kind:file	line:1
+__init__	../dist\TimeoutCache.py	/^    def __init__(self,timeout_ms):$/;"	kind:member	line:29
+__init__	../dist\TimeoutCache.py	/^    def __init__(self,year,month,day,hour,_hx_min,sec):$/;"	kind:member	line:11
+__init__.py	../dist\__init__.py	1;"	kind:file	line:1
+__slots__	../dist\TimeoutCache.py	/^    __slots__ = ("data", "timeout", "refresh", "isInit", "hasElapsed", "current_time", "prev_time", "diff_time", "empty")$/;"	kind:variable	line:27
+__slots__	../dist\TimeoutCache.py	/^    __slots__ = ("date",)$/;"	kind:variable	line:9
+cache_TimeoutCache	../dist\TimeoutCache.py	/^class cache_TimeoutCache:$/;"	kind:class	line:26
+get	../dist\TimeoutCache.py	/^    def get(self):$/;"	kind:member	line:42
+now	../dist\TimeoutCache.py	/^    def now():$/;"	kind:member	line:19
+python_lib_Time	../dist\TimeoutCache.py	/^import time as python_lib_Time$/;"	kind:namespace	line:5
+python_lib_datetime_Datetime	../dist\TimeoutCache.py	/^from datetime import datetime as python_lib_datetime_Datetime$/;"	kind:namespace	line:4
+store	../dist\TimeoutCache.py	/^    def store(self,value):$/;"	kind:member	line:55
