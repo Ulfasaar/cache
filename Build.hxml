@@ -1,7 +1,7 @@
 -dce full
-cache.TimeoutCache
--js dist/TimeoutCache.js
+cache
+-js dist/cache.js
 
 --next
-cache.TimeoutCache
--python dist/TimeoutCache.py
+cache
+-python dist/cache.py

@@ -38,28 +38,24 @@ class CacheUnit extends TestCase{
 
 class TimeoutCacheUnit extends TestCase{
 
-    var cache = new TimeoutCache(1200);
+    var cache: TimeoutCache;
 
-    //! clean this up make seperate units for each class
-
-    // pretend database 
-    var test_val = 0;
-
-    var my_cache = new TimeoutCache(-1);
+    var my_cache: TimeoutCache;
     var blah = 1;
+
+    var test_val = 0;
 
     public function new(){
         super();
-        this.cache.refresh = function(){
-            // had to make it untyped to tell the compiler to shut up
-            this.test_val = this.test_val + 1;
-            untyped cache.store(this.test_val);
-        }
+        this.cache = new TimeoutCache(1200, function(){
+            test_val += 1;
+            return test_val;
+        });
 
-        this.my_cache.refresh = function(){
+        this.my_cache = new TimeoutCache(-1, function(){
             blah = blah + 1;
-            my_cache.store(blah);
-        }
+            return blah;
+        }, function(){ return 0; });
     }
 
     public function test_get(){
@@ -120,12 +116,6 @@ class TimeoutCacheUnit extends TestCase{
         assertEquals(expected, actual); 
     }
     public function test_empty(){
-
-        this.my_cache.empty = function(){
-            this.my_cache.store(0);
-        }
-
-        // this.my_cache.refresh();
         this.my_cache.empty();
         var actual = this.my_cache.get();
         var expected = 0;

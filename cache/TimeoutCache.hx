@@ -5,7 +5,6 @@ package cache;
  */
 @:keep
 class TimeoutCache{
-//! BUG: refresh does not need to be defined.
     private var data: Any;
 
     private var timeout: Float;
@@ -14,8 +13,15 @@ class TimeoutCache{
      *  this lets someone manually trigger a refresh as well
      *  todo: make this compulsorary
      */
-    // dynamic public function refresh(){}
-    public var refresh: Void -> Void;
+
+    private var _refresh: Void -> Any;
+
+        /**
+     *  This callback is called everytime the cache gets emptied
+     *  TODO: make this so that it defaults to setting the variable to null somehow
+     *  for now it sets it to 0 which doesn't do anything useful
+     */
+    private var _empty: Void->Any;
 
     //TODO make private actually work on all targets somehow
     private var isInit:Bool = true;
@@ -29,11 +35,13 @@ class TimeoutCache{
     private var prev_time: Float;
     private var diff_time: Float;
 
-    public function new(timeout_ms: Float){
+    public function new(timeout_ms: Float, refresh: Void->Any, ?empty: Void->Any){
         this.timeout = timeout_ms;
         this.current_time = Date.now().getTime();
         this.prev_time = this.current_time;
         this.diff_time = this.current_time - this.prev_time;
+        this._refresh = refresh;
+        this._empty = empty;
     }
 
     public function get():Any{
@@ -45,14 +53,14 @@ class TimeoutCache{
     
                 // time has elapsed so refresh the cache
                 if(diff_time >= timeout ){
-                    this.refresh();
+                    this.data = this._refresh();
                     //reset the time
                     prev_time = current_time;
                 }
             }
         }
         else{
-            this.refresh();
+            this.data = this._refresh();
             this.isInit = false;
         }
 
@@ -60,22 +68,12 @@ class TimeoutCache{
        
     }
 
-    /**
-     *  This function lets you store data in the cache
-        WARNING!: do not call this function outside of refresh or your backing store will no loner be a 
-        single source of truth
-        @param value
-     */
-    public function store(value: Any){
-        this.data = value;
+    public function refresh(){
+        this.data = this._refresh();
     }
 
-    /**
-     *  This callback is called everytime the cache gets emptied
-     *  TODO: make this so that it defaults to setting the variable to null somehow
-     *  for now it sets it to 0 which doesn't do anything useful
-     */
-    public var empty: Void->Void;
+    public function empty(){
+        this.data = this._empty();
+    }
  
-
 }

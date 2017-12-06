@@ -6,7 +6,7 @@ package cache;
  */
 @:keep
 class Cache{
-//! BUG: refresh does not need to be defined.
+
     private var data: Any;
 
     /**

@@ -216,19 +216,22 @@ cache_Cache.prototype = {
 	,empty: null
 	,__class__: cache_Cache
 };
-var cache_TimeoutCache = function(timeout_ms) {
+var cache_TimeoutCache = function(timeout_ms,refresh,empty) {
 	this.hasElapsed = false;
 	this.isInit = true;
 	this.timeout = timeout_ms;
 	this.current_time = new Date().getTime();
 	this.prev_time = this.current_time;
 	this.diff_time = this.current_time - this.prev_time;
+	this._refresh = refresh;
+	this._empty = empty;
 };
 cache_TimeoutCache.__name__ = ["cache","TimeoutCache"];
 cache_TimeoutCache.prototype = {
 	data: null
 	,timeout: null
-	,refresh: null
+	,_refresh: null
+	,_empty: null
 	,isInit: null
 	,hasElapsed: null
 	,current_time: null
@@ -240,20 +243,22 @@ cache_TimeoutCache.prototype = {
 				this.current_time = new Date().getTime();
 				this.diff_time = this.current_time - this.prev_time;
 				if(this.diff_time >= this.timeout) {
-					this.refresh();
+					this.data = this._refresh();
 					this.prev_time = this.current_time;
 				}
 			}
 		} else {
-			this.refresh();
+			this.data = this._refresh();
 			this.isInit = false;
 		}
 		return this.data;
 	}
-	,store: function(value) {
-		this.data = value;
+	,refresh: function() {
+		this.data = this._refresh();
 	}
-	,empty: null
+	,empty: function() {
+		this.data = this._empty();
+	}
 	,__class__: cache_TimeoutCache
 };
 var haxe_StackItem = { __ename__ : true, __constructs__ : ["CFunction","Module","FilePos","Method","LocalFunction"] };
@@ -877,47 +882,44 @@ tests_CacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 	,__class__: tests_CacheUnit
 });
 var tests_TimeoutCacheUnit = function() {
-	this.blah = 1;
-	this.my_cache = new cache_TimeoutCache(-1);
 	this.test_val = 0;
-	this.cache = new cache_TimeoutCache(1200);
+	this.blah = 1;
 	var _gthis = this;
 	haxe_unit_TestCase.call(this);
-	this.cache.refresh = function() {
-		var _gthis1 = _gthis.cache;
-		var _gthis2 = _gthis;
-		_gthis2.test_val += 1;
-		_gthis1.store(_gthis2.test_val);
-	};
-	this.my_cache.refresh = function() {
-		var _gthis3 = _gthis.my_cache;
-		var _gthis4 = _gthis;
-		_gthis4.blah += 1;
-		_gthis3.store(_gthis4.blah);
-	};
+	this.cache = new cache_TimeoutCache(1200,function() {
+		_gthis.test_val += 1;
+		return _gthis.test_val;
+	});
+	this.my_cache = new cache_TimeoutCache(-1,function() {
+		var _gthis1 = _gthis;
+		_gthis1.blah += 1;
+		return _gthis1.blah;
+	},function() {
+		return 0;
+	});
 };
 tests_TimeoutCacheUnit.__name__ = ["tests","TimeoutCacheUnit"];
 tests_TimeoutCacheUnit.__super__ = haxe_unit_TestCase;
 tests_TimeoutCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 	cache: null
-	,test_val: null
 	,my_cache: null
 	,blah: null
+	,test_val: null
 	,test_get: function() {
 		var actual = this.cache.get();
 		var expected = 1;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 69, className : "tests.TimeoutCacheUnit", methodName : "test_get"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 65, className : "tests.TimeoutCacheUnit", methodName : "test_get"});
 	}
 	,test_cached: function() {
 		var actual = this.cache.get();
 		var expected = 1;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 76, className : "tests.TimeoutCacheUnit", methodName : "test_cached"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 72, className : "tests.TimeoutCacheUnit", methodName : "test_cached"});
 	}
 	,test_refreshed: function() {
 		this.cache.refresh();
 		var actual = this.cache.get();
 		var expected = 2;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 84, className : "tests.TimeoutCacheUnit", methodName : "test_refreshed"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 80, className : "tests.TimeoutCacheUnit", methodName : "test_refreshed"});
 	}
 	,test_timed_out: function() {
 		var current_time = new Date().getTime();
@@ -929,33 +931,29 @@ tests_TimeoutCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 		}
 		var actual = this.cache.get();
 		var expected = 3;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 101, className : "tests.TimeoutCacheUnit", methodName : "test_timed_out"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 97, className : "tests.TimeoutCacheUnit", methodName : "test_timed_out"});
 	}
 	,test_no_timeout: function() {
 		var actual = this.my_cache.get();
 		var expected = 2;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 107, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 103, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout"});
 	}
 	,test_no_timeout_no_refresh: function() {
 		var actual = this.my_cache.get();
 		var expected = 2;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 113, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout_no_refresh"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 109, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout_no_refresh"});
 	}
 	,test_no_timeout_refresh: function() {
 		this.my_cache.refresh();
 		var actual = this.my_cache.get();
 		var expected = 3;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 120, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout_refresh"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 116, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout_refresh"});
 	}
 	,test_empty: function() {
-		var _gthis = this;
-		this.my_cache.empty = function() {
-			_gthis.my_cache.store(0);
-		};
 		this.my_cache.empty();
 		var actual = this.my_cache.get();
 		var expected = 0;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 132, className : "tests.TimeoutCacheUnit", methodName : "test_empty"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 122, className : "tests.TimeoutCacheUnit", methodName : "test_empty"});
 	}
 	,__class__: tests_TimeoutCacheUnit
 });
