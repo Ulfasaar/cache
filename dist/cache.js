@@ -34,6 +34,7 @@ var cache_HybridCache = function(timeout_ms,refresh,get_version,empty) {
 	this.prev_time = this.current_time;
 	this.diff_time = this.current_time - this.prev_time;
 	this.get_version = get_version;
+	this.current_version = this.get_version();
 };
 cache_HybridCache.__super__ = cache_Cache;
 cache_HybridCache.prototype = $extend(cache_Cache.prototype,{
@@ -55,7 +56,7 @@ cache_HybridCache.prototype = $extend(cache_Cache.prototype,{
 				}
 			}
 		} else {
-			this._refresh();
+			this.data = this._refresh();
 			this.isInit = false;
 		}
 		return this.data;
@@ -91,7 +92,9 @@ cache_TimeoutCache.prototype = $extend(cache_Cache.prototype,{
 var cache_VersionedCache = function(refresh,get_version,empty) {
 	this.current_version = 0.0;
 	cache_Cache.call(this,refresh,empty);
-	this.current_version = get_version();
+	this.get_version = get_version;
+	this._empty = empty;
+	this.current_version = this.get_version();
 };
 cache_VersionedCache.__super__ = cache_Cache;
 cache_VersionedCache.prototype = $extend(cache_Cache.prototype,{
@@ -105,7 +108,7 @@ cache_VersionedCache.prototype = $extend(cache_Cache.prototype,{
 		} else {
 			var external_version = this.get_version();
 			if(this.current_version < external_version) {
-				this._refresh();
+				this.data = this._refresh();
 				this.current_version = external_version;
 			}
 		}

@@ -220,6 +220,51 @@ cache_Cache.prototype = {
 	}
 	,__class__: cache_Cache
 };
+var cache_HybridCache = function(timeout_ms,refresh,get_version,empty) {
+	this.hasElapsed = false;
+	cache_Cache.call(this,refresh,empty);
+	this.timeout = timeout_ms;
+	this.current_time = new Date().getTime();
+	this.prev_time = this.current_time;
+	this.diff_time = this.current_time - this.prev_time;
+	this.get_version = get_version;
+	this.current_version = this.get_version();
+};
+cache_HybridCache.__name__ = ["cache","HybridCache"];
+cache_HybridCache.__super__ = cache_Cache;
+cache_HybridCache.prototype = $extend(cache_Cache.prototype,{
+	timeout: null
+	,hasElapsed: null
+	,current_time: null
+	,prev_time: null
+	,diff_time: null
+	,current_version: null
+	,get_version: null
+	,version: function() {
+		return this.current_version;
+	}
+	,get: function() {
+		if(this.isInit == false) {
+			if(this.timeout != -1) {
+				this.current_time = new Date().getTime();
+				this.diff_time = this.current_time - this.prev_time;
+				if(this.diff_time >= this.timeout) {
+					var external_version = this.get_version();
+					if(this.current_version < external_version) {
+						this._refresh();
+						this.current_version = external_version;
+					}
+					this.prev_time = this.current_time;
+				}
+			}
+		} else {
+			this.data = this._refresh();
+			this.isInit = false;
+		}
+		return this.data;
+	}
+	,__class__: cache_HybridCache
+});
 var cache_TimeoutCache = function(timeout_ms,refresh,empty) {
 	this.hasElapsed = false;
 	cache_Cache.call(this,refresh,empty);
@@ -253,6 +298,36 @@ cache_TimeoutCache.prototype = $extend(cache_Cache.prototype,{
 		return this.data;
 	}
 	,__class__: cache_TimeoutCache
+});
+var cache_VersionedCache = function(refresh,get_version,empty) {
+	this.current_version = 0.0;
+	cache_Cache.call(this,refresh,empty);
+	this.get_version = get_version;
+	this._empty = empty;
+	this.current_version = this.get_version();
+};
+cache_VersionedCache.__name__ = ["cache","VersionedCache"];
+cache_VersionedCache.__super__ = cache_Cache;
+cache_VersionedCache.prototype = $extend(cache_Cache.prototype,{
+	current_version: null
+	,get_version: null
+	,version: function() {
+		return this.current_version;
+	}
+	,get: function() {
+		if(this.isInit) {
+			this.data = this._refresh();
+			this.isInit = false;
+		} else {
+			var external_version = this.get_version();
+			if(this.current_version < external_version) {
+				this.data = this._refresh();
+				this.current_version = external_version;
+			}
+		}
+		return this.data;
+	}
+	,__class__: cache_VersionedCache
 });
 var haxe_StackItem = { __ename__ : true, __constructs__ : ["CFunction","Module","FilePos","Method","LocalFunction"] };
 haxe_StackItem.CFunction = ["CFunction",0];
@@ -847,6 +922,124 @@ js_Boot.__isNativeObj = function(o) {
 js_Boot.__resolveNativeClass = function(name) {
 	return $global[name];
 };
+var tests_VersionedCacheUnit = function() {
+	this.version = 0.0;
+	this.i = 0;
+	var _gthis = this;
+	haxe_unit_TestCase.call(this);
+	this.cache = new cache_VersionedCache(function() {
+		var _gthis1 = _gthis;
+		_gthis1.i += 1;
+		return _gthis1.i;
+	},function() {
+		_gthis.version += 1;
+		return _gthis.version;
+	},function() {
+		return 0;
+	});
+};
+tests_VersionedCacheUnit.__name__ = ["tests","VersionedCacheUnit"];
+tests_VersionedCacheUnit.__super__ = haxe_unit_TestCase;
+tests_VersionedCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
+	cache: null
+	,i: null
+	,version: null
+	,test_get: function() {
+		var actual = this.cache.get();
+		var expected = 1;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 27, className : "tests.VersionedCacheUnit", methodName : "test_get"});
+	}
+	,test_cached: function() {
+		var actual = this.cache.get();
+		var expected = 1;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 33, className : "tests.VersionedCacheUnit", methodName : "test_cached"});
+	}
+	,test_empty: function() {
+		this.cache.empty();
+		var actual = this.cache.get();
+		var expected = 0;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 41, className : "tests.VersionedCacheUnit", methodName : "test_empty"});
+	}
+	,test_refreshed: function() {
+		this.cache.refresh();
+		var actual = this.cache.get();
+		var expected = 3;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 47, className : "tests.VersionedCacheUnit", methodName : "test_refreshed"});
+	}
+	,test_version: function() {
+		var actual = this.cache.version();
+		var expected = 2.0;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 53, className : "tests.VersionedCacheUnit", methodName : "test_version"});
+	}
+	,test_not_always_updating: function() {
+		this.cache.get();
+		this.cache.get();
+		this.cache.get();
+		var actual = this.cache.get();
+		var expected = 3;
+		this.assertEquals(actual,expected,{ fileName : "Test.hx", lineNumber : 61, className : "tests.VersionedCacheUnit", methodName : "test_not_always_updating"});
+	}
+	,__class__: tests_VersionedCacheUnit
+});
+var tests_HybridCacheUnit = function() {
+	this.version = 0.0;
+	this.i = 0;
+	var _gthis = this;
+	haxe_unit_TestCase.call(this);
+	this.cache = new cache_HybridCache(1200,function() {
+		var _gthis1 = _gthis;
+		_gthis1.i += 1;
+		return _gthis1.i;
+	},function() {
+		_gthis.version += 1;
+		return _gthis.version;
+	},function() {
+		return 0;
+	});
+};
+tests_HybridCacheUnit.__name__ = ["tests","HybridCacheUnit"];
+tests_HybridCacheUnit.__super__ = haxe_unit_TestCase;
+tests_HybridCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
+	cache: null
+	,i: null
+	,version: null
+	,test_get: function() {
+		var actual = this.cache.get();
+		var expected = 1;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 84, className : "tests.HybridCacheUnit", methodName : "test_get"});
+	}
+	,test_cached: function() {
+		var actual = this.cache.get();
+		var expected = 1;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 90, className : "tests.HybridCacheUnit", methodName : "test_cached"});
+	}
+	,test_empty: function() {
+		this.cache.empty();
+		var actual = this.cache.get();
+		var expected = 0;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 98, className : "tests.HybridCacheUnit", methodName : "test_empty"});
+	}
+	,test_refreshed: function() {
+		this.cache.refresh();
+		var actual = this.cache.get();
+		var expected = 3;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 104, className : "tests.HybridCacheUnit", methodName : "test_refreshed"});
+	}
+	,test_version: function() {
+		var actual = this.cache.version();
+		var expected = 2.0;
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 110, className : "tests.HybridCacheUnit", methodName : "test_version"});
+	}
+	,test_not_always_updating: function() {
+		this.cache.get();
+		this.cache.get();
+		this.cache.get();
+		var actual = this.cache.get();
+		var expected = 3;
+		this.assertEquals(actual,expected,{ fileName : "Test.hx", lineNumber : 118, className : "tests.HybridCacheUnit", methodName : "test_not_always_updating"});
+	}
+	,__class__: tests_HybridCacheUnit
+});
 var tests_CacheUnit = function() {
 	this.i = 0;
 	var _gthis = this;
@@ -864,13 +1057,13 @@ tests_CacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 	,test_cached: function() {
 		var actual = this.cache.get();
 		var expected = 1;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 24, className : "tests.CacheUnit", methodName : "test_cached"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 139, className : "tests.CacheUnit", methodName : "test_cached"});
 	}
 	,test_refreshed: function() {
 		this.cache.refresh();
 		var actual = this.cache.get();
 		var expected = 2;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 33, className : "tests.CacheUnit", methodName : "test_refreshed"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 146, className : "tests.CacheUnit", methodName : "test_refreshed"});
 	}
 	,__class__: tests_CacheUnit
 });
@@ -901,18 +1094,18 @@ tests_TimeoutCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 	,test_get: function() {
 		var actual = this.cache.get();
 		var expected = 1;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 65, className : "tests.TimeoutCacheUnit", methodName : "test_get"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 178, className : "tests.TimeoutCacheUnit", methodName : "test_get"});
 	}
 	,test_cached: function() {
 		var actual = this.cache.get();
 		var expected = 1;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 72, className : "tests.TimeoutCacheUnit", methodName : "test_cached"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 185, className : "tests.TimeoutCacheUnit", methodName : "test_cached"});
 	}
 	,test_refreshed: function() {
 		this.cache.refresh();
 		var actual = this.cache.get();
 		var expected = 2;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 80, className : "tests.TimeoutCacheUnit", methodName : "test_refreshed"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 193, className : "tests.TimeoutCacheUnit", methodName : "test_refreshed"});
 	}
 	,test_timed_out: function() {
 		var current_time = new Date().getTime();
@@ -924,29 +1117,29 @@ tests_TimeoutCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 		}
 		var actual = this.cache.get();
 		var expected = 3;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 97, className : "tests.TimeoutCacheUnit", methodName : "test_timed_out"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 210, className : "tests.TimeoutCacheUnit", methodName : "test_timed_out"});
 	}
 	,test_no_timeout: function() {
 		var actual = this.my_cache.get();
 		var expected = 2;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 103, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 216, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout"});
 	}
 	,test_no_timeout_no_refresh: function() {
 		var actual = this.my_cache.get();
 		var expected = 2;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 109, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout_no_refresh"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 222, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout_no_refresh"});
 	}
 	,test_no_timeout_refresh: function() {
 		this.my_cache.refresh();
 		var actual = this.my_cache.get();
 		var expected = 3;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 116, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout_refresh"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 229, className : "tests.TimeoutCacheUnit", methodName : "test_no_timeout_refresh"});
 	}
 	,test_empty: function() {
 		this.my_cache.empty();
 		var actual = this.my_cache.get();
 		var expected = 0;
-		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 122, className : "tests.TimeoutCacheUnit", methodName : "test_empty"});
+		this.assertEquals(expected,actual,{ fileName : "Test.hx", lineNumber : 235, className : "tests.TimeoutCacheUnit", methodName : "test_empty"});
 	}
 	,__class__: tests_TimeoutCacheUnit
 });
@@ -956,6 +1149,8 @@ tests_Test.main = function() {
 	var runner = new haxe_unit_TestRunner();
 	runner.add(new tests_CacheUnit());
 	runner.add(new tests_TimeoutCacheUnit());
+	runner.add(new tests_HybridCacheUnit());
+	runner.add(new tests_VersionedCacheUnit());
 	runner.run();
 };
 String.prototype.__class__ = String;

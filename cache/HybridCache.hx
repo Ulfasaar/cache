@@ -22,13 +22,14 @@ class HybridCache extends Cache{
     private var get_version: Void->Float;
 
 
-    public function new(timeout_ms: Float, refresh: Void->Any, get_version: Void->Float, empty: Void->Any){
+    public function new(timeout_ms: Float, refresh: Void->Any, get_version: Void->Float, ?empty: Void->Any){
         super(refresh, empty);
         this.timeout = timeout_ms;
         this.current_time = Date.now().getTime();
         this.prev_time = this.current_time;
         this.diff_time = this.current_time - this.prev_time;
         this.get_version = get_version;
+        this.current_version = this.get_version();
     }
 
     public function version(){
@@ -54,7 +55,7 @@ class HybridCache extends Cache{
             }
         }
         else{
-            this._refresh();
+            this.data = this._refresh();
             this.isInit = false;
         }
 
