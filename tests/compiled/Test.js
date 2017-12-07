@@ -194,14 +194,16 @@ Type.getInstanceFields = function(c) {
 	HxOverrides.remove(a,"__properties__");
 	return a;
 };
-var cache_Cache = function(refresh) {
+var cache_Cache = function(refresh,empty) {
 	this.isInit = true;
 	this._refresh = refresh;
+	this._empty = empty;
 };
 cache_Cache.__name__ = ["cache","Cache"];
 cache_Cache.prototype = {
 	data: null
 	,_refresh: null
+	,_empty: null
 	,isInit: null
 	,get: function() {
 		if(this.isInit) {
@@ -213,26 +215,23 @@ cache_Cache.prototype = {
 	,refresh: function() {
 		this.data = this._refresh();
 	}
-	,empty: null
+	,empty: function() {
+		this.data = this._empty();
+	}
 	,__class__: cache_Cache
 };
 var cache_TimeoutCache = function(timeout_ms,refresh,empty) {
 	this.hasElapsed = false;
-	this.isInit = true;
+	cache_Cache.call(this,refresh,empty);
 	this.timeout = timeout_ms;
 	this.current_time = new Date().getTime();
 	this.prev_time = this.current_time;
 	this.diff_time = this.current_time - this.prev_time;
-	this._refresh = refresh;
-	this._empty = empty;
 };
 cache_TimeoutCache.__name__ = ["cache","TimeoutCache"];
-cache_TimeoutCache.prototype = {
-	data: null
-	,timeout: null
-	,_refresh: null
-	,_empty: null
-	,isInit: null
+cache_TimeoutCache.__super__ = cache_Cache;
+cache_TimeoutCache.prototype = $extend(cache_Cache.prototype,{
+	timeout: null
 	,hasElapsed: null
 	,current_time: null
 	,prev_time: null
@@ -253,14 +252,8 @@ cache_TimeoutCache.prototype = {
 		}
 		return this.data;
 	}
-	,refresh: function() {
-		this.data = this._refresh();
-	}
-	,empty: function() {
-		this.data = this._empty();
-	}
 	,__class__: cache_TimeoutCache
-};
+});
 var haxe_StackItem = { __ename__ : true, __constructs__ : ["CFunction","Module","FilePos","Method","LocalFunction"] };
 haxe_StackItem.CFunction = ["CFunction",0];
 haxe_StackItem.CFunction.toString = $estr;

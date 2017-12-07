@@ -16,6 +16,14 @@ class Cache{
     // dynamic public function refresh(){}
     private var _refresh: Void -> Any;
 
+        /**
+     *  This callback is called everytime the cache gets emptied
+     *  TODO: make this so that it defaults to setting the variable to null somehow
+     *  for now it sets it to 0 which doesn't do anything useful
+     */
+    private var _empty: Void->Any;
+ 
+
     //TODO make private actually work on all targets somehow
     private var isInit:Bool = true;
 
@@ -24,8 +32,9 @@ class Cache{
      */
 
 
-    public function new(refresh: Void->Any){
+    public function new(refresh: Void->Any, ?empty:Void->Any){
         this._refresh = refresh;
+        this._empty = empty;
     }
 
     public function get():Any{
@@ -40,12 +49,8 @@ class Cache{
         this.data = this._refresh();
     }
 
-    /**
-     *  This callback is called everytime the cache gets emptied
-     *  TODO: make this so that it defaults to setting the variable to null somehow
-     *  for now it sets it to 0 which doesn't do anything useful
-     */
-    public var empty: Void->Void;
- 
+    public function empty(){
+        this.data = this._empty();
+    }
 
 }

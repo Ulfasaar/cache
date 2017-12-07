@@ -5,26 +5,14 @@ package cache;
  *  version is compared to the caches internal version, if it is larger the cache refreshes
  */
 @:keep
-class VersionedCache{
-
-    private var data: Any;
-
-    /**
-     *  this lets someone manually trigger a refresh as well
-     *  todo: make this compulsorary
-     */
-    private var _refresh: Void -> Any;
-
-    //TODO make private actually work on all targets somehow
-    private var isInit:Bool = true;
-
+class VersionedCache extends Cache{
 
     private var current_version:Float = 0.0;
 
     private var get_version: Void->Float;
 
-    public function new(refresh: Void->Any, get_version: Void->Float){
-        this._refresh = refresh;
+    public function new(refresh: Void->Any, get_version: Void->Float, empty: Void->Any){
+        super(refresh, empty);
         this.current_version = get_version();
     }
 
@@ -32,7 +20,7 @@ class VersionedCache{
         return this.current_version;
     }
 
-    public function get():Any{
+    public override function get():Any{
         if(this.isInit){
             this.data = this._refresh();
             this.isInit = false;
@@ -46,17 +34,4 @@ class VersionedCache{
         }
         return this.data;
     }
-
-    public function refresh(){
-        this.data = this._refresh();
-    }
-
-    /**
-     *  This callback is called everytime the cache gets emptied
-     *  TODO: make this so that it defaults to setting the variable to null somehow
-     *  for now it sets it to 0 which doesn't do anything useful
-     */
-    public var empty: Void->Void;
- 
-
 }

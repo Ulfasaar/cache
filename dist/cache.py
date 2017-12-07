@@ -24,13 +24,13 @@ class Date:
 
 
 class cache_Cache:
-    __slots__ = ("data", "_refresh", "isInit", "empty")
+    __slots__ = ("data", "_refresh", "_empty", "isInit")
 
-    def __init__(self,refresh):
-        self.empty = None
+    def __init__(self,refresh,empty = None):
         self.data = None
         self.isInit = True
         self._refresh = refresh
+        self._empty = empty
 
     def get(self):
         if self.isInit:
@@ -41,26 +41,27 @@ class cache_Cache:
     def refresh(self):
         self.data = self._refresh()
 
+    def empty(self):
+        self.data = self._empty()
 
 
-class cache_HybridCache:
-    __slots__ = ("data", "timeout", "_refresh", "isInit", "hasElapsed", "current_time", "prev_time", "diff_time", "current_version", "get_version", "empty")
 
-    def __init__(self,timeout_ms,refresh,get_version):
-        self.empty = None
+class cache_HybridCache(cache_Cache):
+    __slots__ = ("timeout", "hasElapsed", "current_time", "prev_time", "diff_time", "current_version", "get_version")
+
+    def __init__(self,timeout_ms,refresh,get_version,empty):
         self.get_version = None
         self.current_version = None
         self.diff_time = None
         self.prev_time = None
-        self._refresh = None
-        self.data = None
+        self.current_time = None
+        self.timeout = None
         self.hasElapsed = False
-        self.isInit = True
+        super().__init__(refresh,empty)
         self.timeout = timeout_ms
         self.current_time = (python_lib_Time.mktime(Date.now().date.timetuple()) * 1000)
         self.prev_time = self.current_time
         self.diff_time = (self.current_time - self.prev_time)
-        self._refresh = refresh
         self.get_version = get_version
 
     def version(self):
@@ -82,28 +83,22 @@ class cache_HybridCache:
             self.isInit = False
         return self.data
 
-    def refresh(self):
-        self.data = self._refresh()
 
 
-
-class cache_TimeoutCache:
-    __slots__ = ("data", "timeout", "_refresh", "_empty", "isInit", "hasElapsed", "current_time", "prev_time", "diff_time")
+class cache_TimeoutCache(cache_Cache):
+    __slots__ = ("timeout", "hasElapsed", "current_time", "prev_time", "diff_time")
 
     def __init__(self,timeout_ms,refresh,empty = None):
         self.diff_time = None
         self.prev_time = None
-        self._empty = None
-        self._refresh = None
-        self.data = None
+        self.current_time = None
+        self.timeout = None
         self.hasElapsed = False
-        self.isInit = True
+        super().__init__(refresh,empty)
         self.timeout = timeout_ms
         self.current_time = (python_lib_Time.mktime(Date.now().date.timetuple()) * 1000)
         self.prev_time = self.current_time
         self.diff_time = (self.current_time - self.prev_time)
-        self._refresh = refresh
-        self._empty = empty
 
     def get(self):
         if (self.isInit == False):
@@ -118,24 +113,15 @@ class cache_TimeoutCache:
             self.isInit = False
         return self.data
 
-    def refresh(self):
-        self.data = self._refresh()
-
-    def empty(self):
-        self.data = self._empty()
 
 
+class cache_VersionedCache(cache_Cache):
+    __slots__ = ("current_version", "get_version")
 
-class cache_VersionedCache:
-    __slots__ = ("data", "_refresh", "isInit", "current_version", "get_version", "empty")
-
-    def __init__(self,refresh,get_version):
-        self.empty = None
+    def __init__(self,refresh,get_version,empty):
         self.get_version = None
-        self.data = None
         self.current_version = 0.0
-        self.isInit = True
-        self._refresh = refresh
+        super().__init__(refresh,empty)
         self.current_version = get_version()
 
     def version(self):
@@ -151,8 +137,5 @@ class cache_VersionedCache:
                 self._refresh()
                 self.current_version = external_version
         return self.data
-
-    def refresh(self):
-        self.data = self._refresh()
 
 
