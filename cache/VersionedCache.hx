@@ -4,6 +4,7 @@ package cache;
  *  This version of the cache implements a version check, so everytime the data is fetched the external sources
  *  version is compared to the caches internal version, if it is larger the cache refreshes
  */
+@:expose
 @:keep
 class VersionedCache extends Cache{
 

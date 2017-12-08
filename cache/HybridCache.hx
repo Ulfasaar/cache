@@ -4,6 +4,7 @@ package cache;
   it only refreshes the cache when data is requested and the cache times out, or if refresh is called
   TODO: make this class somehow pull stuff in from both versioned cache and timeout cache also finish tests
  */
+@:expose
 @:keep
 class HybridCache extends Cache{
 

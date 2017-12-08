@@ -49,7 +49,7 @@ class cache_Cache:
 class cache_HybridCache(cache_Cache):
     __slots__ = ("timeout", "hasElapsed", "current_time", "prev_time", "diff_time", "current_version", "get_version")
 
-    def __init__(self,timeout_ms,refresh,get_version,empty):
+    def __init__(self,timeout_ms,refresh,get_version,empty = None):
         self.get_version = None
         self.current_version = None
         self.diff_time = None
@@ -63,6 +63,7 @@ class cache_HybridCache(cache_Cache):
         self.prev_time = self.current_time
         self.diff_time = (self.current_time - self.prev_time)
         self.get_version = get_version
+        self.current_version = self.get_version()
 
     def version(self):
         return self.current_version
@@ -79,7 +80,7 @@ class cache_HybridCache(cache_Cache):
                         self.current_version = external_version
                     self.prev_time = self.current_time
         else:
-            self._refresh()
+            self.data = self._refresh()
             self.isInit = False
         return self.data
 
@@ -118,11 +119,13 @@ class cache_TimeoutCache(cache_Cache):
 class cache_VersionedCache(cache_Cache):
     __slots__ = ("current_version", "get_version")
 
-    def __init__(self,refresh,get_version,empty):
+    def __init__(self,refresh,get_version,empty = None):
         self.get_version = None
         self.current_version = 0.0
         super().__init__(refresh,empty)
-        self.current_version = get_version()
+        self.get_version = get_version
+        self._empty = empty
+        self.current_version = self.get_version()
 
     def version(self):
         return self.current_version
@@ -134,7 +137,7 @@ class cache_VersionedCache(cache_Cache):
         else:
             external_version = self.get_version()
             if (self.current_version < external_version):
-                self._refresh()
+                self.data = self._refresh()
                 self.current_version = external_version
         return self.data
 
