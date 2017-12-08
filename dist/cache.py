@@ -76,7 +76,7 @@ class cache_HybridCache(cache_Cache):
                 if (self.diff_time >= self.timeout):
                     external_version = self.get_version()
                     if (self.current_version < external_version):
-                        self._refresh()
+                        self.data = self._refresh()
                         self.current_version = external_version
                     self.prev_time = self.current_time
         else:

@@ -44,10 +44,11 @@ class HybridCache extends Cache{
                 diff_time = current_time - prev_time;
     
                 // time has elapsed so refresh the cache
+                // ! refactor this so that it is a timeout function instead cus used here and in timeout
                 if(diff_time >= timeout ){
                     var external_version = this.get_version();
                     if(this.current_version < external_version){
-                        this._refresh();
+                        this.data = this._refresh();
                         this.current_version = external_version;
                     }
                     //reset the time

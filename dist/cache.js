@@ -50,7 +50,7 @@ cache_HybridCache.prototype = $extend(cache_Cache.prototype,{
 				if(this.diff_time >= this.timeout) {
 					var external_version = this.get_version();
 					if(this.current_version < external_version) {
-						this._refresh();
+						this.data = this._refresh();
 						this.current_version = external_version;
 					}
 					this.prev_time = this.current_time;
