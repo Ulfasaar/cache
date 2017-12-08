@@ -244,6 +244,10 @@ cache_HybridCache.prototype = $extend(cache_Cache.prototype,{
 	,version: function() {
 		return this.current_version;
 	}
+	,refresh: function() {
+		this.current_version = this.get_version();
+		this.data = this._refresh();
+	}
 	,get: function() {
 		if(this.isInit == false) {
 			if(this.timeout != -1) {
@@ -259,7 +263,7 @@ cache_HybridCache.prototype = $extend(cache_Cache.prototype,{
 				}
 			}
 		} else {
-			this.data = this._refresh();
+			this.refresh();
 			this.isInit = false;
 		}
 		return this.data;
@@ -282,6 +286,12 @@ cache_TimeoutCache.prototype = $extend(cache_Cache.prototype,{
 	,current_time: null
 	,prev_time: null
 	,diff_time: null
+	,refresh: function() {
+		this.diff_time = 0;
+		this.current_time = new Date().getTime();
+		this.prev_time = this.current_time;
+		this.data = this._refresh();
+	}
 	,get: function() {
 		if(this.isInit == false) {
 			if(this.timeout != -1) {
@@ -314,6 +324,10 @@ cache_VersionedCache.prototype = $extend(cache_Cache.prototype,{
 	,get_version: null
 	,version: function() {
 		return this.current_version;
+	}
+	,refresh: function() {
+		this.current_version = this.get_version();
+		this.data = this._refresh();
 	}
 	,get: function() {
 		if(this.isInit) {
@@ -997,8 +1011,8 @@ tests_HybridCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 	}
 	,test_version: function() {
 		var actual = this.cache.version();
-		var expected = 2.0;
-		this.assertEquals(expected,actual,{ fileName : "HybridCacheUnit.hx", lineNumber : 52, className : "tests.HybridCacheUnit", methodName : "test_version"});
+		var expected = 4.0;
+		this.assertEquals(expected,actual,{ fileName : "HybridCacheUnit.hx", lineNumber : 54, className : "tests.HybridCacheUnit", methodName : "test_version"});
 	}
 	,test_not_always_updating: function() {
 		this.cache.get();
@@ -1006,7 +1020,7 @@ tests_HybridCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 		this.cache.get();
 		var actual = this.cache.get();
 		var expected = 3;
-		this.assertEquals(actual,expected,{ fileName : "HybridCacheUnit.hx", lineNumber : 60, className : "tests.HybridCacheUnit", methodName : "test_not_always_updating"});
+		this.assertEquals(actual,expected,{ fileName : "HybridCacheUnit.hx", lineNumber : 62, className : "tests.HybridCacheUnit", methodName : "test_not_always_updating"});
 	}
 	,test_timed_out: function() {
 		var current_time = new Date().getTime();
@@ -1018,7 +1032,7 @@ tests_HybridCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 		}
 		var actual = this.cache.get();
 		var expected = 4;
-		this.assertEquals(expected,actual,{ fileName : "HybridCacheUnit.hx", lineNumber : 77, className : "tests.HybridCacheUnit", methodName : "test_timed_out"});
+		this.assertEquals(expected,actual,{ fileName : "HybridCacheUnit.hx", lineNumber : 79, className : "tests.HybridCacheUnit", methodName : "test_timed_out"});
 	}
 	,__class__: tests_HybridCacheUnit
 });

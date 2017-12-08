@@ -13,7 +13,7 @@ class HybridCacheUnit extends TestCase{
             this.i = this.i + 1;
             return this.i;
         }, function(){
-            this.version += 1;
+            this.version = this.version + 1;
             return this.version;
         }, function(){
             return 0;
@@ -47,8 +47,10 @@ class HybridCacheUnit extends TestCase{
     }
 
     public function test_version(){
+
+        // Get version is also called once in the constructor to get initial version
         var actual = this.cache.version();
-        var expected = 2.0;
+        var expected = 4.0;
         assertEquals(expected, actual); 
     }
     public function test_not_always_updating(){

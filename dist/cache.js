@@ -42,6 +42,10 @@ cache_HybridCache.prototype = $extend(cache_Cache.prototype,{
 	version: function() {
 		return this.current_version;
 	}
+	,refresh: function() {
+		this.current_version = this.get_version();
+		this.data = this._refresh();
+	}
 	,get: function() {
 		if(this.isInit == false) {
 			if(this.timeout != -1) {
@@ -57,7 +61,7 @@ cache_HybridCache.prototype = $extend(cache_Cache.prototype,{
 				}
 			}
 		} else {
-			this.data = this._refresh();
+			this.refresh();
 			this.isInit = false;
 		}
 		return this.data;
@@ -73,7 +77,13 @@ var cache_TimeoutCache = $hx_exports["cache"]["TimeoutCache"] = function(timeout
 };
 cache_TimeoutCache.__super__ = cache_Cache;
 cache_TimeoutCache.prototype = $extend(cache_Cache.prototype,{
-	get: function() {
+	refresh: function() {
+		this.diff_time = 0;
+		this.current_time = new Date().getTime();
+		this.prev_time = this.current_time;
+		this.data = this._refresh();
+	}
+	,get: function() {
 		if(this.isInit == false) {
 			if(this.timeout != -1) {
 				this.current_time = new Date().getTime();
@@ -101,6 +111,10 @@ cache_VersionedCache.__super__ = cache_Cache;
 cache_VersionedCache.prototype = $extend(cache_Cache.prototype,{
 	version: function() {
 		return this.current_version;
+	}
+	,refresh: function() {
+		this.current_version = this.get_version();
+		this.data = this._refresh();
 	}
 	,get: function() {
 		if(this.isInit) {

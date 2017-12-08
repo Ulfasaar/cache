@@ -36,6 +36,13 @@ class HybridCache extends Cache{
     public function version(){
         return this.current_version;
     }
+
+    public override function refresh(){
+        // overriding the function to make sure the version is updated correctly on a manual refresh
+        this.current_version = this.get_version();
+        this.data = this._refresh();
+    }
+
     public override function get():Any{
         if(this.isInit == false){
 
@@ -57,7 +64,8 @@ class HybridCache extends Cache{
             }
         }
         else{
-            this.data = this._refresh();
+            this.refresh();
+            // this.data = this._refresh();
             this.isInit = false;
         }
 

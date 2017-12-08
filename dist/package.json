@@ -1,0 +1,21 @@
+{
+    "name": "cache",
+    "version": "0.0.1",
+    "description": "This is a small library for creating lazy loaded, in memory, call back based caches.",
+    "author": {
+        "name": "Ryan Weyers",
+        "email": "weyers.ryan@gmail.com",
+        "url": "https://www.linkedin.com/in/rjweyers/"
+    },
+    "bugs": {
+        "email": "weyers.ryan@gmail.com",
+        "url": "https://github.com/Ulfasaar/cache/issues"
+    },
+    "repository": {
+        "url": "https://github.com/Ulfasaar/cache",
+        "type": "git"
+    },
+    "files": [
+        "cache.js"
+    ]
+}

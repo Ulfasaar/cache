@@ -27,6 +27,15 @@ class TimeoutCache extends Cache{
         this.diff_time = this.current_time - this.prev_time;
     }
 
+    public override function refresh(){
+
+        // reset the timer because we refreshed manually already
+        this.diff_time = 0;
+        this.current_time = Date.now().getTime();
+        this.prev_time = this.current_time;
+        this.data = this._refresh();
+    }
+
     public override function get():Any{
         if(this.isInit == false){
 
