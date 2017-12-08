@@ -40,6 +40,9 @@ class HybridCache extends Cache{
     public override function refresh(){
         // overriding the function to make sure the version is updated correctly on a manual refresh
         this.current_version = this.get_version();
+        this.diff_time = 0;
+        this.current_time = Date.now().getTime();
+        this.prev_time = this.current_time;
         this.data = this._refresh();
     }
 

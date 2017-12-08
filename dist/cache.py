@@ -68,6 +68,13 @@ class cache_HybridCache(cache_Cache):
     def version(self):
         return self.current_version
 
+    def refresh(self):
+        self.current_version = self.get_version()
+        self.diff_time = 0
+        self.current_time = (python_lib_Time.mktime(Date.now().date.timetuple()) * 1000)
+        self.prev_time = self.current_time
+        self.data = self._refresh()
+
     def get(self):
         if (self.isInit == False):
             if (self.timeout != -1):
@@ -80,7 +87,7 @@ class cache_HybridCache(cache_Cache):
                         self.current_version = external_version
                     self.prev_time = self.current_time
         else:
-            self.data = self._refresh()
+            self.refresh()
             self.isInit = False
         return self.data
 
@@ -100,6 +107,12 @@ class cache_TimeoutCache(cache_Cache):
         self.current_time = (python_lib_Time.mktime(Date.now().date.timetuple()) * 1000)
         self.prev_time = self.current_time
         self.diff_time = (self.current_time - self.prev_time)
+
+    def refresh(self):
+        self.diff_time = 0
+        self.current_time = (python_lib_Time.mktime(Date.now().date.timetuple()) * 1000)
+        self.prev_time = self.current_time
+        self.data = self._refresh()
 
     def get(self):
         if (self.isInit == False):
@@ -129,6 +142,10 @@ class cache_VersionedCache(cache_Cache):
 
     def version(self):
         return self.current_version
+
+    def refresh(self):
+        self.current_version = self.get_version()
+        self.data = self._refresh()
 
     def get(self):
         if self.isInit:

@@ -44,6 +44,9 @@ cache_HybridCache.prototype = $extend(cache_Cache.prototype,{
 	}
 	,refresh: function() {
 		this.current_version = this.get_version();
+		this.diff_time = 0;
+		this.current_time = new Date().getTime();
+		this.prev_time = this.current_time;
 		this.data = this._refresh();
 	}
 	,get: function() {

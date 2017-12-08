@@ -28,7 +28,7 @@ class HybridCacheUnit extends TestCase{
     public function test_cached(){
         var actual = this.cache.get();
         actual = this.cache.get();
-        var expected = 2;
+        var expected = 1;
         assertEquals(expected, actual); 
     }
 
@@ -42,7 +42,7 @@ class HybridCacheUnit extends TestCase{
     public function test_refreshed(){
         this.cache.refresh();
         var actual = this.cache.get();
-        var expected = 3;
+        var expected = 2;
         assertEquals(expected, actual); 
     }
 
@@ -50,7 +50,7 @@ class HybridCacheUnit extends TestCase{
 
         // Get version is also called once in the constructor to get initial version
         var actual = this.cache.version();
-        var expected = 4.0;
+        var expected = 3.0;
         assertEquals(expected, actual); 
     }
     public function test_not_always_updating(){
@@ -58,8 +58,8 @@ class HybridCacheUnit extends TestCase{
         this.cache.get();
         this.cache.get();
         var actual = this.cache.get();
-        var expected = 3;
-        assertEquals(actual, expected);
+        var expected = 2;
+        assertEquals(expected, actual);
     }
 
     public function test_timed_out(){
@@ -75,7 +75,7 @@ class HybridCacheUnit extends TestCase{
         }
 
         var actual = this.cache.get();
-        var expected = 4;
+        var expected = 3;
         assertEquals(expected, actual); 
     }
 }

@@ -246,6 +246,9 @@ cache_HybridCache.prototype = $extend(cache_Cache.prototype,{
 	}
 	,refresh: function() {
 		this.current_version = this.get_version();
+		this.diff_time = 0;
+		this.current_time = new Date().getTime();
+		this.prev_time = this.current_time;
 		this.data = this._refresh();
 	}
 	,get: function() {
@@ -994,7 +997,7 @@ tests_HybridCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 	,test_cached: function() {
 		var actual = this.cache.get();
 		actual = this.cache.get();
-		var expected = 2;
+		var expected = 1;
 		this.assertEquals(expected,actual,{ fileName : "HybridCacheUnit.hx", lineNumber : 32, className : "tests.HybridCacheUnit", methodName : "test_cached"});
 	}
 	,test_empty: function() {
@@ -1006,12 +1009,12 @@ tests_HybridCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 	,test_refreshed: function() {
 		this.cache.refresh();
 		var actual = this.cache.get();
-		var expected = 3;
+		var expected = 2;
 		this.assertEquals(expected,actual,{ fileName : "HybridCacheUnit.hx", lineNumber : 46, className : "tests.HybridCacheUnit", methodName : "test_refreshed"});
 	}
 	,test_version: function() {
 		var actual = this.cache.version();
-		var expected = 4.0;
+		var expected = 3.0;
 		this.assertEquals(expected,actual,{ fileName : "HybridCacheUnit.hx", lineNumber : 54, className : "tests.HybridCacheUnit", methodName : "test_version"});
 	}
 	,test_not_always_updating: function() {
@@ -1019,8 +1022,8 @@ tests_HybridCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 		this.cache.get();
 		this.cache.get();
 		var actual = this.cache.get();
-		var expected = 3;
-		this.assertEquals(actual,expected,{ fileName : "HybridCacheUnit.hx", lineNumber : 62, className : "tests.HybridCacheUnit", methodName : "test_not_always_updating"});
+		var expected = 2;
+		this.assertEquals(expected,actual,{ fileName : "HybridCacheUnit.hx", lineNumber : 62, className : "tests.HybridCacheUnit", methodName : "test_not_always_updating"});
 	}
 	,test_timed_out: function() {
 		var current_time = new Date().getTime();
@@ -1031,7 +1034,7 @@ tests_HybridCacheUnit.prototype = $extend(haxe_unit_TestCase.prototype,{
 			diff_time = current_time - prev_time;
 		}
 		var actual = this.cache.get();
-		var expected = 4;
+		var expected = 3;
 		this.assertEquals(expected,actual,{ fileName : "HybridCacheUnit.hx", lineNumber : 79, className : "tests.HybridCacheUnit", methodName : "test_timed_out"});
 	}
 	,__class__: tests_HybridCacheUnit
