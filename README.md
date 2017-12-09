@@ -8,6 +8,10 @@ across multiple languages without the overhead of running another process and th
 This library is also fairly unopionated, you can refresh each cache whenever you want, each class type just provides a nice way to bundle the refreshing of the cache with the data itself and automatically refreshes it for you when you pull
 data out of it.
 
+The library also allows the user to store any object inside the cache, and does not force the user to asdign a key for the data as part of a dictionary or hash map. Instead it is encouraged to make a seperate global variable with a appropriate name for each item of data. For instance you might have a instance of cache called user cache, that simply stores a user object.
+
+Since you can store any data however, that means you are free to store collections, dictionaries or whatever you want.
+
 ## Suggested use conventions
 
 - Use the most optimal cache type for the job! The basic cache should be used for cases where the data becomes stale due to unpredictable external events such as user input. It also allows you to create your own cache types fairly easily by extending off of it or by wrapping it.
