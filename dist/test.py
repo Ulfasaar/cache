@@ -1,3 +1,6 @@
-from cache import cache_Cache as Cache
+from cache import cache_TimeoutCache as Cache
 
-print(Cache)
+def refresh():
+    print("hi") 
+
+test = Cache(1234, refresh).refresh()
